@@ -3,9 +3,8 @@ exports.up = function(connection, Promise) {
 		usersTable
 			.string("username", 40)
 			.notNullable()
-			.primary()
-			.unique();
-		usersTable.string("avatar_url");
+			.primary();
+		usersTable.string("avatar_url").notNullable();
 		usersTable.string("name", 20).notNullable();
 	});
 };
