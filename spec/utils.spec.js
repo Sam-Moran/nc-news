@@ -9,7 +9,6 @@ describe("formatDate", () => {
 		expect(actual).to.eql(expected);
 	});
 	it("returns a single time to the current date", () => {
-		//const time = 1471522072389;
 		const data = { created_at: 1471522072389 };
 		const actual = formatDate([data]);
 		const created_at = new Date(1471522072389);
@@ -121,7 +120,6 @@ describe("formatComments", () => {
 		const data = [{ created_by: "Sam Moran" }];
 		const refData = { A: 1 };
 		const actual = formatComments(data, refData);
-		const expected = [{ author: "Sam Moran" }];
 		expect(actual[0].author).to.eql("Sam Moran");
 	});
 	it("contains an array with an object with the belongs_to key renamed to article_id", () => {
@@ -130,7 +128,34 @@ describe("formatComments", () => {
 		];
 		const refData = { "Making sense of Redux": 1 };
 		const actual = formatComments(data, refData);
-		const expected = [{ article_id: 1 }];
 		expect(actual[0].article_id).to.eql(1);
+	});
+	it("contains created_id key value pair converted into javascript date object", () => {
+		const data = [
+			{
+				body:
+					"Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+				belongs_to:
+					"The People Tracking Every Touch, Pass And Tackle in the World Cup",
+				created_by: "tickle122",
+				votes: -1,
+				created_at: 1468087638932
+			}
+		];
+		const refData = {
+			"The People Tracking Every Touch, Pass And Tackle in the World Cup": 1
+		};
+		const actual = formatComments(data, refData);
+		const expected = [
+			{
+				body:
+					"Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+				article_id: 1,
+				author: "tickle122",
+				votes: -1,
+				created_at: new Date("2016-07-09T18:07:18.932Z")
+			}
+		];
+		expect(actual).to.eql(expected);
 	});
 });
