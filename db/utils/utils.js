@@ -13,4 +13,6 @@ exports.makeRefObj = list => {
 	return refObj;
 };
 
-exports.formatComments = (comments, articleRef) => {};
+exports.formatComments = (comments, articleRef) => {
+	if (comments.length === 0 || !articleRef) return [];
+};
