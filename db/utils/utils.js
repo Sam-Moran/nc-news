@@ -15,15 +15,12 @@ exports.makeRefObj = list => {
 
 exports.formatComments = (comments, articleRef) => {
 	return comments.map(comment => {
-		if (comment.length === 0 || !articleRef) return [];
-		else {
-			comment.author = comment.created_by;
-			delete comment.created_by;
-			const belong = comment.belongs_to;
-			comment.article_id = articleRef[belong];
-			delete comment.belongs_to;
-			comment.created_at = new Date(comment.created_at);
-			return comment;
-		}
+		comment.author = comment.created_by;
+		delete comment.created_by;
+		const belong = comment.belongs_to;
+		comment.article_id = articleRef[belong];
+		delete comment.belongs_to;
+		comment.created_at = new Date(comment.created_at);
+		return comment;
 	});
 };
