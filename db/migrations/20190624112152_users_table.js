@@ -3,7 +3,8 @@ exports.up = function(connection, Promise) {
 		usersTable
 			.string("username")
 			.notNullable()
-			.primary();
+			.primary()
+			.unique();
 		usersTable.string("avatar_url");
 		usersTable.string("name").notNullable();
 	});
