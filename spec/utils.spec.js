@@ -124,4 +124,13 @@ describe("formatComments", () => {
 		const expected = [{ author: "Sam Moran" }];
 		expect(actual).to.eql(expected);
 	});
+	it("contains an array with an object with the belongs_to key renamed to article_id", () => {
+		const data = [
+			{ created_by: "Sam Moran", belongs_to: "Making sense of Redux" }
+		];
+		const refData = { "Making sense of Redux": 1 };
+		const actual = formatComments(data, refData);
+		const expected = [{ article_id: 1 }];
+		expect(actual).to.eql(expected);
+	});
 });
