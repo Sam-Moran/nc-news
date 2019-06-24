@@ -103,4 +103,11 @@ describe("makeRefObj", () => {
 	});
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+	it("returns an empty array when passed an empty array", () => {
+		const data = [];
+		const actual = formatComments(data);
+		const expected = [];
+		expect(actual).to.eql(expected);
+	});
+});
