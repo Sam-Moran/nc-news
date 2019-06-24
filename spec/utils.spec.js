@@ -9,12 +9,15 @@ describe("formatDate", () => {
 		expect(actual).to.eql(expected);
 	});
 	it("returns a single time to the current date", () => {
-		const created_at = Number(new Date());
-		const data = [{ created_at }];
+		const time = 1471522072389;
+		const data = [{ time }];
 		const actual = formatDate(data);
-		const timeString = new Date();
-		const expected = [timeString];
+		const created_at = new Date(1471522072389);
+		const expected = [{ created_at }];
 		expect(actual).to.eql(expected);
+	});
+	it('returns an array of objects with time formatted', () => {
+		cons
 	});
 });
 
