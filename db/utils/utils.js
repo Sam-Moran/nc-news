@@ -14,5 +14,12 @@ exports.makeRefObj = list => {
 };
 
 exports.formatComments = (comments, articleRef) => {
-	if (comments.length === 0 || !articleRef) return [];
+	return comments.map(comment => {
+		if (comment.length === 0 || !articleRef) return [];
+		else {
+			comment.author = comment.created_by;
+			delete comment.created_by;
+			return comment;
+		}
+	});
 };
