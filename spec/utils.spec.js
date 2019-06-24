@@ -81,7 +81,7 @@ describe("formatDate", () => {
 describe("makeRefObj", () => {
 	it("returns an empty object when passed an empty array", () => {
 		const actual = makeRefObj([]);
-		const expected = [];
+		const expected = {};
 		expect(actual).to.eql(expected);
 	});
 });
