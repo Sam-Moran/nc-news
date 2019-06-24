@@ -5,6 +5,8 @@ exports.formatDate = list => {
 	});
 };
 
-exports.makeRefObj = list => {};
+exports.makeRefObj = list => {
+	if (list.length === 0) return {};
+};
 
 exports.formatComments = (comments, articleRef) => {};
