@@ -22,7 +22,7 @@ exports.formatComments = (comments, articleRef) => {
 			const belong = comment.belongs_to;
 			comment.article_id = articleRef[belong];
 			delete comment.belongs_to;
-			console.log(comment);
+			comment.created_at = new Date(comment.created_at);
 			return comment;
 		}
 	});
