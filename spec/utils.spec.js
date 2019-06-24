@@ -158,4 +158,64 @@ describe("formatComments", () => {
 		];
 		expect(actual).to.eql(expected);
 	});
+	it("returns multiple items in an array with all the key value pairs changed", () => {
+		const data = [
+			{
+				body:
+					"Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+				belongs_to:
+					"The People Tracking Every Touch, Pass And Tackle in the World Cup",
+				created_by: "tickle122",
+				votes: -1,
+				created_at: 1468087638932
+			},
+			{
+				body: "Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.",
+				belongs_to: "Making sense of Redux",
+				created_by: "grumpy19",
+				votes: 7,
+				created_at: 1478813209256
+			},
+			{
+				body:
+					"Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.",
+				belongs_to: "22 Amazing open source React projects",
+				created_by: "grumpy19",
+				votes: 3,
+				created_at: 1504183900263
+			}
+		];
+		const refData = {
+			"The People Tracking Every Touch, Pass And Tackle in the World Cup": 1,
+			"Making sense of Redux": 2,
+			"22 Amazing open source React projects": 3
+		};
+		const actual = formatComments(data, refData);
+		const expected = [
+			{
+				article_id: 1,
+				author: "tickle122",
+				body:
+					"Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
+				created_at: new Date("2016-07-09T18:07:18.932Z"),
+				votes: -1
+			},
+			{
+				article_id: 2,
+				author: "grumpy19",
+				body: "Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.",
+				created_at: new Date("2016-11-10T21:26:49.256Z"),
+				votes: 7
+			},
+			{
+				article_id: 3,
+				author: "grumpy19",
+				body:
+					"Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.",
+				created_at: new Date("2017-08-31T12:51:40.263Z"),
+				votes: 3
+			}
+		];
+		expect(actual).to.eql(expected);
+	});
 });
