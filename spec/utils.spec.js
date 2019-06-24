@@ -117,4 +117,11 @@ describe("formatComments", () => {
 		const expected = [];
 		expect(actual).to.eql(expected);
 	});
+	it("contains an array with an object with the created_by key renamed to author", () => {
+		const data = [{ created_by: "Sam Moran" }];
+		const refData = { A: 1 };
+		const actual = formatComments(data, refData);
+		const expected = [{ author: "Sam Moran" }];
+		expect(actual).to.eql(expected);
+	});
 });
