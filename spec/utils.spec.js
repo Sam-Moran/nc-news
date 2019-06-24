@@ -110,4 +110,11 @@ describe("formatComments", () => {
 		const expected = [];
 		expect(actual).to.eql(expected);
 	});
+	it("returns an empty array when passed an empty object", () => {
+		const data = [];
+		const refData = {};
+		const actual = formatComments(data, refData);
+		const expected = [];
+		expect(actual).to.eql(expected);
+	});
 });
