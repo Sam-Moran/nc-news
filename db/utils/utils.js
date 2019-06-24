@@ -19,6 +19,10 @@ exports.formatComments = (comments, articleRef) => {
 		else {
 			comment.author = comment.created_by;
 			delete comment.created_by;
+			const belong = comment.belongs_to;
+			comment.article_id = articleRef[belong];
+			delete comment.belongs_to;
+			console.log(comment);
 			return comment;
 		}
 	});
