@@ -84,10 +84,21 @@ describe("makeRefObj", () => {
 		const expected = {};
 		expect(actual).to.eql(expected);
 	});
-	it("returns an object containing the title and article_id key value pair", () => {
+	it("returns an array with one object containing the title and article_id key value pair", () => {
 		const data = [{ article_id: 1, title: "A" }];
 		const actual = makeRefObj(data);
 		const expected = { A: 1 };
+		expect(actual).to.eql(expected);
+	});
+	it("returns an array with object containing the title and article_id key value pair of multiple articles", () => {
+		const data = [
+			{ article_id: 1, title: "A" },
+			{ article_id: 2, title: "B" },
+			{ article_id: 3, title: "C" },
+			{ article_id: 4, title: "D" }
+		];
+		const actual = makeRefObj(data);
+		const expected = { A: 1, B: 2, C: 3, D: 4 };
 		expect(actual).to.eql(expected);
 	});
 });
