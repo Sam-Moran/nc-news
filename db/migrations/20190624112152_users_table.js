@@ -1,12 +1,12 @@
 exports.up = function(connection, Promise) {
 	return connection.schema.createTable("users", usersTable => {
 		usersTable
-			.string("username")
+			.string("username", 40)
 			.notNullable()
 			.primary()
 			.unique();
 		usersTable.string("avatar_url");
-		usersTable.string("name").notNullable();
+		usersTable.string("name", 20).notNullable();
 	});
 };
 

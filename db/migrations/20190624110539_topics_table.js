@@ -1,8 +1,8 @@
 exports.up = function(connection, Promise) {
 	return connection.schema.createTable("topics", topicsTable => {
-		topicsTable.string("description").notNullable();
+		topicsTable.string("description", 40).notNullable();
 		topicsTable
-			.string("slug")
+			.string("slug", 20)
 			.notNullable()
 			.primary();
 	});
