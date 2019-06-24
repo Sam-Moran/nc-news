@@ -8,6 +8,14 @@ describe("formatDate", () => {
 		const expected = [];
 		expect(actual).to.eql(expected);
 	});
+	it("returns a single time to the current date", () => {
+		const created_at = Number(new Date());
+		const data = [{ created_at }];
+		const actual = formatDate(data);
+		const timeString = new Date().toDateString();
+		const expected = [timeString];
+		expect(actual).to.eql(expected);
+	});
 });
 
 describe("makeRefObj", () => {});
