@@ -84,6 +84,12 @@ describe("makeRefObj", () => {
 		const expected = {};
 		expect(actual).to.eql(expected);
 	});
+	it("returns an object containing the title and article_id key value pair", () => {
+		const data = [{ article_id: 1, title: "A" }];
+		const actual = makeRefObj(data);
+		const expected = { A: 1 };
+		expect(actual).to.eql(expected);
+	});
 });
 
 describe("formatComments", () => {});
