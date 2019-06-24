@@ -7,4 +7,6 @@ exports.up = function(connection, Promise) {
 			.primary();
 	});
 };
-exports.down = function(connection, Promise) {};
+exports.down = function(connection, Promise) {
+	return connection.schema.dropTable("topics");
+};
