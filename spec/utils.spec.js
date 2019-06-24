@@ -122,7 +122,7 @@ describe("formatComments", () => {
 		const refData = { A: 1 };
 		const actual = formatComments(data, refData);
 		const expected = [{ author: "Sam Moran" }];
-		expect(actual).to.eql(expected);
+		expect(actual[0].author).to.eql("Sam Moran");
 	});
 	it("contains an array with an object with the belongs_to key renamed to article_id", () => {
 		const data = [
@@ -131,6 +131,6 @@ describe("formatComments", () => {
 		const refData = { "Making sense of Redux": 1 };
 		const actual = formatComments(data, refData);
 		const expected = [{ article_id: 1 }];
-		expect(actual).to.eql(expected);
+		expect(actual[0].article_id).to.eql(1);
 	});
 });
