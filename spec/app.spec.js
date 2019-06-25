@@ -20,5 +20,31 @@ describe("/", () => {
 					});
 			});
 		});
+		describe("/users", () => {
+			describe("/:username", () => {
+				it("GET status 200: and returns a specifc user object", () => {
+					return request(app)
+						.get("/api/users/butter_bridge")
+						.expect(200)
+						.then(res => {
+							expect(res.body.user).to.contain.keys(
+								"username",
+								"avatar_url",
+								"name"
+							);
+							expect(res.body.user.username).to.equal("butter_bridge");
+							expect(res.body.user.name).to.equal("jonny");
+						});
+				});
+				it('GET status:404 and returns "...does not exist!"', () => {
+					return request(app)
+						.get("/api/users/angryhippo")
+						.expect(404)
+						.then(error => {
+							expect(error.body.msg).to.equal("angryhippo does not exist!");
+						});
+				});
+			});
+		});
 	});
 });
