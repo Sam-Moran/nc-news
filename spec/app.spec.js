@@ -36,14 +36,69 @@ describe("/", () => {
 							expect(res.body.user.name).to.equal("jonny");
 						});
 				});
-				it('GET status:404 and returns "...does not exist!"', () => {
+				it('Bad Request status:404 and returns "User...does not exist!"', () => {
 					return request(app)
 						.get("/api/users/angryhippo")
 						.expect(404)
 						.then(error => {
-							expect(error.body.msg).to.equal("angryhippo does not exist!");
+							expect(error.body.msg).to.equal(
+								"User angryhippo does not exist!"
+							);
 						});
 				});
+			});
+		});
+		describe("/articles", () => {
+			describe("/:article_id", () => {
+				it("GET Status:200 and returns an object of the specific article", () => {
+					return request(app)
+						.get("/api/articles/1")
+						.expect(200)
+						.then(res => {
+							expect(res.body.article).to.contain.keys(
+								"title",
+								"article_id",
+								"body",
+								"topic",
+								"created_at",
+								"votes"
+							);
+						});
+				});
+				it("GET Status:200 returns an object with a comment count", () => {
+					return request(app)
+						.get("/api/articles/1")
+						.expect(200)
+						.then(res => {
+							expect(res.body.article.comment_count).to.equal("13");
+						});
+				});
+				it('BAD Request status 404 with a valid number but returns "Article...does not exist!"', () => {
+					return request(app)
+						.get("/api/articles/999")
+						.expect(404)
+						.then(error => {
+							expect(error.body.msg).to.equal("Article 999 does not exist!");
+						});
+				});
+				it("Bad Request status 400 with not a number", () => {
+					return request(app)
+						.get("/api/articles/one")
+						.expect(400)
+						.then(error => {
+							expect(error.body.msg).to.equal("Bad request");
+						});
+				});
+			});
+		});
+		describe("/not-a-valid-route", () => {
+			it("Bad Request status 404, Route not found", () => {
+				return request(app)
+					.get("/not-a-valid-route")
+					.expect(404)
+					.then(error => {
+						expect(error.body.msg).to.equal("Route not found");
+					});
 			});
 		});
 	});
