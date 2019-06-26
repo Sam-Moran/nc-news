@@ -26,4 +26,12 @@ const updateArticleById = (article_id, inc_votes) => {
 		.then(([article]) => article);
 };
 
-module.exports = { fetchArticleById, updateArticleById };
+const addComment = formattedComment => {
+	return connection
+		.into("comments")
+		.insert(formattedComment)
+		.returning("*")
+		.then(([comment]) => comment);
+};
+
+module.exports = { fetchArticleById, updateArticleById, addComment };

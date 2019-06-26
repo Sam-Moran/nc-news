@@ -1,6 +1,7 @@
 const {
 	fetchArticleById,
-	updateArticleById
+	updateArticleById,
+	addComment
 } = require("../models/articles-models.js");
 
 const sendArticleById = (req, res, next) => {
@@ -22,4 +23,19 @@ const patchArticleById = (req, res, next) => {
 		.catch(err => next(err));
 };
 
-module.exports = { sendArticleById, patchArticleById };
+const postComment = (req, res, next) => {
+	const { body } = req;
+	const { article_id } = req.params;
+	const formattedComment = {
+		author: body.username,
+		body: body.body,
+		article_id
+	};
+	addComment(formattedComment)
+		.then(comment => {
+			res.status(201).send({ comment });
+		})
+		.catch(err => next(err));
+};
+
+module.exports = { sendArticleById, patchArticleById, postComment };

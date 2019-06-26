@@ -134,6 +134,64 @@ describe("/", () => {
 							expect(body.msg).to.equal("Method not allowed");
 						});
 				});
+				describe("/comments", () => {
+					it("PUT status: 405 if using an invalid method", () => {
+						return request(app)
+							.put("/api/articles/1/comments")
+							.expect(405)
+							.then(({ body }) => {
+								expect(body.msg).to.equal("Method not allowed");
+							});
+					});
+					it("POST status:201 insert a comment to a valid article id and return the comment", () => {
+						return request(app)
+							.post("/api/articles/1/comments")
+							.send({
+								username: "butter_bridge",
+								body:
+									"This is not the greatest comment in the world, this is just a tribute."
+							})
+							.expect(201)
+							.then(({ body }) => {
+								expect(body.comment).to.contain.keys(
+									"comment_id",
+									"author",
+									"article_id",
+									"votes",
+									"created_at",
+									"body"
+								);
+								expect(body.comment.body).to.equal(
+									"This is not the greatest comment in the world, this is just a tribute."
+								);
+								expect(body.comment.article_id).to.equal(1);
+							});
+					});
+					it("POST status:400, error when trying to insert a comment into an invalid article_id", () => {
+						return request(app)
+							.post("/api/articles/99/comments")
+							.send({
+								username: "butter_bridge",
+								body:
+									"This is not the greatest comment in the world, this is just a tribute."
+							})
+							.expect(400)
+							.then(({ body }) => {
+								expect(body.msg).to.equal(
+									'Key (article_id)=(99) is not present in table "articles".'
+								);
+							});
+					});
+					it("POST Status:400, error when trying to insert empty object", () => {
+						return request(app)
+							.post("/api/articles/1/comments")
+							.send({})
+							.expect(400)
+							.then(({ body }) => {
+								expect(body.msg).to.equal("Cannot insert null data");
+							});
+					});
+				});
 			});
 		});
 		describe("/not-a-valid-route", () => {

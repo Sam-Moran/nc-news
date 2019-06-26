@@ -4,8 +4,13 @@ const customError = (err, req, res, next) => {
 };
 
 const sqlErrors = (err, req, res, next) => {
-	if (err.code === "22P02") {
-		res.status(400).send({ msg: "Bad request" });
+	const errorCodes = {
+		"22P02": "Bad request",
+		"23502": "Cannot insert null data",
+		"23503": `${err.detail}`
+	};
+	if (errorCodes[err.code]) {
+		res.status(400).send({ msg: errorCodes[err.code] });
 	}
 	next(err);
 };
@@ -18,4 +23,13 @@ const methodNotAllowed = (req, res) => {
 	res.status(405).send({ msg: "Method not allowed" });
 };
 
-module.exports = { customError, sqlErrors, serverError, methodNotAllowed };
+const pageNotFound = (req, res, next) =>
+	res.status(404).send({ msg: "Route not found" });
+
+module.exports = {
+	customError,
+	sqlErrors,
+	serverError,
+	methodNotAllowed,
+	pageNotFound
+};
