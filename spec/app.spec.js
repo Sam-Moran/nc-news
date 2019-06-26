@@ -89,6 +89,16 @@ describe("/", () => {
 							expect(error.body.msg).to.equal("Bad request");
 						});
 				});
+				it("Patch status:201 and increases the vote count", () => {
+					return request(app)
+						.patch("/api/articles/1")
+						.send({ inc_votes: 1 })
+						.expect(201)
+						.then(res => {
+							expect(res.body.article.votes).to.equal(101);
+							expect(res.body.article.votes).to.not.equal(100);
+						});
+				});
 			});
 		});
 		describe("/not-a-valid-route", () => {
