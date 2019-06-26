@@ -1,6 +1,11 @@
 const express = require("express");
 const app = express();
 const apiRouter = require("./routers/api-router");
+const {
+	customError,
+	sqlErrors,
+	serverError
+} = require("./errors/errorhandling.js");
 
 app.use(express.json());
 
@@ -9,18 +14,8 @@ app.all("/*", (req, res, next) =>
 	res.status(404).send({ msg: "Route not found" })
 );
 
-app.use((err, req, res, next) => {
-	if (err.status) res.status(err.status).send({ msg: err.msg });
-	else next(err);
-});
-app.use((err, req, res, next) => {
-	if (err.code === "22P02") {
-		res.status(400).send({ msg: "Bad request" });
-	}
-	next(err);
-});
+app.use(customError);
+app.use(sqlErrors);
+app.use(serverError);
 
-app.use((err, req, res, next) => {
-	res.status(500).send({ msg: "Internal Server Error" });
-});
 module.exports = app;

@@ -19,6 +19,14 @@ describe("/", () => {
 						expect(res.body.topics[0].slug).to.equal("mitch");
 					});
 			});
+			it("PUT status: 405 if using an invalid method", () => {
+				return request(app)
+					.put("/api/topics")
+					.expect(405)
+					.then(({ body }) => {
+						expect(body.msg).to.equal("Method not allowed");
+					});
+			});
 		});
 		describe("/users", () => {
 			describe("/:username", () => {
@@ -36,7 +44,7 @@ describe("/", () => {
 							expect(res.body.user.name).to.equal("jonny");
 						});
 				});
-				it('Bad Request status:404 and returns "User...does not exist!"', () => {
+				it('GET status:404 and returns "User...does not exist!"', () => {
 					return request(app)
 						.get("/api/users/angryhippo")
 						.expect(404)
@@ -46,8 +54,17 @@ describe("/", () => {
 							);
 						});
 				});
+				it("PUT status: 405 if using an invalid method", () => {
+					return request(app)
+						.put("/api/users/angryhippo")
+						.expect(405)
+						.then(({ body }) => {
+							expect(body.msg).to.equal("Method not allowed");
+						});
+				});
 			});
 		});
+
 		describe("/articles", () => {
 			describe("/:article_id", () => {
 				it("GET Status:200 and returns an object of the specific article", () => {
@@ -73,7 +90,7 @@ describe("/", () => {
 							expect(res.body.article.comment_count).to.equal("13");
 						});
 				});
-				it('BAD Request status 404 with a valid number but returns "Article...does not exist!"', () => {
+				it('GET status 404 with a valid number but returns "Article...does not exist!"', () => {
 					return request(app)
 						.get("/api/articles/999")
 						.expect(404)
@@ -81,7 +98,7 @@ describe("/", () => {
 							expect(error.body.msg).to.equal("Article 999 does not exist!");
 						});
 				});
-				it("Bad Request status 400 with not a number", () => {
+				it("GET status 400, bad request with not a number", () => {
 					return request(app)
 						.get("/api/articles/one")
 						.expect(400)
@@ -99,10 +116,28 @@ describe("/", () => {
 							expect(res.body.article.votes).to.not.equal(100);
 						});
 				});
+				it("Patch status:201 and decreases the vote count", () => {
+					return request(app)
+						.patch("/api/articles/1")
+						.send({ inc_votes: -1 })
+						.expect(201)
+						.then(res => {
+							expect(res.body.article.votes).to.equal(99);
+							expect(res.body.article.votes).to.not.equal(100);
+						});
+				});
+				it("PUT status: 405 if using an invalid method", () => {
+					return request(app)
+						.put("/api/articles/1")
+						.expect(405)
+						.then(({ body }) => {
+							expect(body.msg).to.equal("Method not allowed");
+						});
+				});
 			});
 		});
 		describe("/not-a-valid-route", () => {
-			it("Bad Request status 404, Route not found", () => {
+			it("GET status 404, Route not found", () => {
 				return request(app)
 					.get("/not-a-valid-route")
 					.expect(404)
