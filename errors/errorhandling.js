@@ -7,7 +7,9 @@ const sqlErrors = (err, req, res, next) => {
 	const errorCodes = {
 		"22P02": "Bad request",
 		"23502": "Cannot insert null data",
-		"23503": `${err.detail}`
+		"23503": "Resource does not exist",
+		"42703": "Column to sort_by does not exist",
+		"22003": "Article_id value is not within range"
 	};
 	if (errorCodes[err.code]) {
 		res.status(400).send({ msg: errorCodes[err.code] });

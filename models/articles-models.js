@@ -34,4 +34,39 @@ const addComment = formattedComment => {
 		.then(([comment]) => comment);
 };
 
-module.exports = { fetchArticleById, updateArticleById, addComment };
+const fetchComments = (article_id, { sort_by, order }) => {
+	const acceptedOrders = ["asc", "desc", undefined];
+	if (acceptedOrders.includes(order)) {
+		return connection
+			.select(
+				"comments.comment_id",
+				"comments.author",
+				"comments.votes",
+				"comments.created_at",
+				"comments.body"
+			)
+			.from("comments")
+			.where("comments.article_id", "=", article_id)
+			.orderBy(sort_by || "created_at", order || "desc")
+			.returning("*")
+			.then(comments => {
+				if (!comments.length) {
+					return Promise.reject({
+						status: 404,
+						msg: `Article ${article_id} has no comments`
+					});
+				} else return comments;
+			});
+	} else
+		return Promise.reject({
+			status: 400,
+			msg: `Cannot order columns by ${order}, must use "asc" or "desc"`
+		});
+};
+
+module.exports = {
+	fetchArticleById,
+	updateArticleById,
+	addComment,
+	fetchComments
+};
