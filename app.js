@@ -11,7 +11,7 @@ const {
 app.use(express.json());
 
 app.use("/api", apiRouter);
-app.all("/*", pageNotFound);
+app.use("/*", pageNotFound);
 app.use(customError);
 app.use(sqlErrors);
 app.use(serverError);
