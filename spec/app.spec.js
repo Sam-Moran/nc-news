@@ -421,5 +421,72 @@ describe("/", () => {
 					});
 			});
 		});
+		describe("/comments", () => {
+			describe("/:comment_id", () => {
+				it("PATCH Status: 201 and returns a comment and with its votes increased", () => {
+					return request(app)
+						.patch("/api/comments/1")
+						.send({ inc_votes: 1 })
+						.expect(201)
+						.then(({ body }) => expect(body.comment.votes).to.equal(17));
+				});
+				it("PATCH Status: 201 and returns a comment and its votes decreased", () => {
+					return request(app)
+						.patch("/api/comments/1")
+						.send({ inc_votes: -1 })
+						.expect(201)
+						.then(({ body }) => expect(body.comment.votes).to.equal(15));
+				});
+				it("PATCH Status: 400 and returns an error when trying to increase votes with not a number", () => {
+					return request(app)
+						.patch("/api/comments/1")
+						.send({ inc_votes: "not a number" })
+						.expect(400)
+						.then(({ body }) => expect(body.msg).to.equal("Bad request"));
+				});
+				it("PATCH Status: 400 and returns an error when trying to change votes in an incorrect way", () => {
+					return request(app)
+						.patch("/api/comments/1")
+						.send({ inc_votes_please: 1 })
+						.expect(400)
+						.then(({ body }) =>
+							expect(body.msg).to.equal(
+								'Must use "inc_votes: n" format when updating votes'
+							)
+						);
+				});
+				it("PATCH Status: 400 and returns an error when trying to increase votes on comment to an article out of range", () => {
+					return request(app)
+						.patch("/api/comments/1111111111111111")
+						.send({ inc_votes: 1 })
+						.expect(400)
+						.then(({ body }) =>
+							expect(body.msg).to.equal("Article_id value is not within range")
+						);
+				});
+				it("PATCH Status: 400 and returns an error when trying to add comments", () => {
+					return request(app)
+						.patch("/api/comments/AAAAAAAA")
+						.send({ inc_votes: 1 })
+						.expect(400)
+						.then(({ body }) => expect(body.msg).to.equal("Bad request"));
+				});
+				it("DELETE Status: 204 and returns no content when deleting comment ", () => {
+					return request(app)
+						.delete("/api/comments/1")
+						.expect(204);
+				});
+				it("DELETE Status: 404 when trying to delete a comment that doesnt exist", () => {
+					return request(app)
+						.delete("/api/comments/999")
+						.expect(404)
+						.then(({ body }) =>
+							expect(body.msg).to.equal(
+								"Cannot delete comment 999 as it does not exist!"
+							)
+						);
+				});
+			});
+		});
 	});
 });
