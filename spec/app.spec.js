@@ -232,7 +232,7 @@ describe("/", () => {
 							.get("/api/articles/1/comments")
 							.expect(200)
 							.then(({ body }) => {
-								expect(body[0]).to.contain.keys(
+								expect(body.comments[0]).to.contain.keys(
 									"comment_id",
 									"author",
 									"votes",
@@ -244,7 +244,7 @@ describe("/", () => {
 					it("GET status: 400, returns an empty array when a valid article has no comments ", () => {
 						return request(app)
 							.get("/api/articles/3/comments")
-							.expect(400)
+							.expect(200)
 							.then(({ body }) => {
 								expect(body).to.eql([]);
 							});
@@ -262,8 +262,10 @@ describe("/", () => {
 							.get("/api/articles/1/comments")
 							.expect(200)
 							.then(({ body }) => {
-								expect(body).be.sortedBy("created_at", { descending: true });
-								expect(body).to.not.be.sortedBy("created_at", {
+								expect(body.comments).be.sortedBy("created_at", {
+									descending: true
+								});
+								expect(body.comments).to.not.be.sortedBy("created_at", {
 									descending: false
 								});
 							});
@@ -273,8 +275,10 @@ describe("/", () => {
 							.get("/api/articles/1/comments?sort_by=votes")
 							.expect(200)
 							.then(({ body }) => {
-								expect(body).be.sortedBy("votes", { descending: true });
-								expect(body).to.not.be.sortedBy("created_at", {
+								expect(body.comments).be.sortedBy("votes", {
+									descending: true
+								});
+								expect(body.comments).to.not.be.sortedBy("created_at", {
 									descending: true
 								});
 							});
@@ -284,7 +288,7 @@ describe("/", () => {
 							.get("/api/articles/1/comments?sort_by=votes&order=asc")
 							.expect(200)
 							.then(({ body }) => {
-								expect(body).be.sortedBy("votes", { ascending: true });
+								expect(body.comments).be.sortedBy("votes", { ascending: true });
 							});
 					});
 					it("GET Status: 400 and returns an error if trying to sort by a column that doesnt exist", () => {
@@ -300,7 +304,9 @@ describe("/", () => {
 							.get("/api/articles/1/comments?order=asc")
 							.expect(200)
 							.then(({ body }) => {
-								expect(body).be.sortedBy("created_at", { descending: false });
+								expect(body.comments).be.sortedBy("created_at", {
+									descending: false
+								});
 							});
 					});
 					it("GET Status: 400 and returns an error message if trying to order by anything other than ascending or descending", () => {
@@ -315,13 +321,94 @@ describe("/", () => {
 					});
 				});
 			});
-			xit("GET Status: 200 and returns all the articles", () => {
+			it("GET Status: 200 and returns all the articles", () => {
 				return request(app)
 					.get("/api/articles")
 					.expect(200)
-					.then(mystery => {
-						console.log(mystery);
+					.then(({ body }) =>
+						expect(body.articles[0]).to.contain.keys(
+							"article_id",
+							"title",
+							"body",
+							"votes",
+							"topic",
+							"author",
+							"created_at",
+							"comment_count"
+						)
+					);
+			});
+			it("GET Status: 200 and returns all the articles sorted by date/created_at by default and in descending order", () => {
+				return request(app)
+					.get("/api/articles")
+					.expect(200)
+					.then(({ body }) => {
+						expect(body.articles).to.be.sortedBy("created_at", {
+							descending: true
+						});
 					});
+			});
+			it("GET Status: 400 and returns an error if trying to sort by a column that does not exist", () => {
+				return request(app)
+					.get("/api/articles?sort_by=gibberish")
+					.expect(400)
+					.then(({ body }) =>
+						expect(body.msg).to.equal("Column to sort_by does not exist")
+					);
+			});
+			it("GET Status: 400 and returns an error if trying to a valid column with the wrong method", () => {
+				return request(app)
+					.get("/api/articles?sort_by=created_at&order=jhsfbsg")
+					.expect(400)
+					.then(({ body }) =>
+						expect(body.msg).to.equal(
+							'Cannot order columns by jhsfbsg, must use "asc" or "desc"'
+						)
+					);
+			});
+			it("GET Status: 200 and returns articles sorted by a column other than created_at but defaulted to descending", () => {
+				return request(app)
+					.get("/api/articles?sort_by=votes")
+					.expect(200)
+					.then(({ body }) => {
+						expect(body.articles).to.be.sortedBy("votes", { descending: true });
+					});
+			});
+			it("GET Status: 200 and returns articles sorted by column other than created_at and by the order requested", () => {
+				return request(app)
+					.get("/api/articles?sort_by=votes&order=asc")
+					.expect(200)
+					.then(({ body }) =>
+						expect(body.articles).to.be.sortedBy("votes", { ascending: true })
+					);
+			});
+			it("GET Status: 200 and returns articles of only a particular author", () => {
+				return request(app)
+					.get("/api/articles?author=butter_bridge")
+					.expect(200)
+					.then(({ body }) =>
+						expect(body.articles[0].author).to.equal("butter_bridge")
+					);
+			});
+			xit("GET Status: 400 and returns an error if trying to filter by an author who doesnt exist", () => {
+				return request(app)
+					.get("/api/articles?author=Sam_Moran")
+					.expect(200)
+					.then(({ body }) => {
+						console.log(body);
+					});
+			});
+			it("GET Status: 200 and returns an articles of only a particular topic", () => {
+				return request(app)
+					.get("/api/articles?topic=mitch")
+					.expect(200)
+					.then(({ body }) => expect(body.articles[0].topic).to.equal("mitch"));
+			});
+			xit("GET Status: 400 and returns an error if the topic doesnt exist", () => {
+				return request(app)
+					.get("/api/articles?topic=random")
+					.expect(200)
+					.then(({ body }) => console.log(body));
 			});
 		});
 		describe("/not-a-valid-route", () => {

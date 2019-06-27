@@ -45,18 +45,20 @@ const getComments = (req, res, next) => {
 	fetchComments(article_id, req.query)
 		.then(comments => {
 			if (comments.topic) {
-				res.status(400).send([]);
+				res.status(200).send([]);
 			} else {
-				res.status(200).send(comments);
+				res.status(200).send({ comments });
 			}
 		})
 		.catch(err => next(err));
 };
 
 const getArticles = (req, res, next) => {
-	fetchArticles()
+	fetchArticles(req.query)
 		.then(articles => {
-			res.status(200).send(articles);
+			if (!articles) {
+				res.status(400).send([]);
+			} else res.status(200).send({ articles });
 		})
 		.catch(err => next(err));
 };

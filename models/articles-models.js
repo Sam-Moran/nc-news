@@ -14,9 +14,6 @@ const fetchArticleById = (article_id, comments) => {
 					status: 404,
 					msg: `Article ${article_id} does not exist!`
 				});
-			} else if (article & comments) {
-				let article = [];
-				return article;
 			} else return article;
 		});
 };
@@ -61,7 +58,7 @@ const fetchComments = (article_id, { sort_by, order }) => {
 			.returning("*")
 			.then(comments => {
 				if (!comments.length) {
-					return fetchArticleById(article_id, comments);
+					return fetchArticleById(article_id);
 				} else return comments;
 			});
 	} else
@@ -71,15 +68,32 @@ const fetchComments = (article_id, { sort_by, order }) => {
 		});
 };
 
-const fetchArticles = () => {
-	return connection
-		.select("*")
-		.from("articles")
-		.rightJoin("comments", "comments.article_id", "=", " articles.article_id")
-		.count("comments.article_id as comment_count")
-		.groupBy("articles.article_id", "comments.article_id")
-		.returning("*")
-		.then(articles => console.log(articles));
+const fetchArticles = ({ sort_by, order, author, topic }) => {
+	const acceptedOrders = ["asc", "desc", undefined];
+	if (acceptedOrders.includes(order)) {
+		return connection
+			.select("articles.*")
+			.from("articles")
+			.leftJoin("comments", "comments.article_id", "=", " articles.article_id")
+			.count("comments.article_id as comment_count")
+			.groupBy("articles.article_id", "comments.article_id")
+			.orderBy(sort_by || "created_at", order || "desc")
+			.returning("*")
+			.modify(query => {
+				if (author) {
+					query.where("articles.author", "=", author);
+				} else if (topic) {
+					query.where("articles.topic", "=", topic);
+				}
+			})
+			.then(articles => {
+				return articles;
+			});
+	} else
+		return Promise.reject({
+			status: 400,
+			msg: `Cannot order columns by ${order}, must use "asc" or "desc"`
+		});
 };
 
 module.exports = {
