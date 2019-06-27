@@ -137,6 +137,17 @@ describe("/", () => {
 							expect(body.msg).to.equal("Bad request");
 						});
 				});
+				it("PATCH Status: 400 and returns error message when passed an invalid body", () => {
+					return request(app)
+						.patch("/api/articles/1")
+						.send({ increased_the_votes: 1 })
+						.expect(400)
+						.then(({ body }) => {
+							expect(body.msg).to.equal(
+								'Must use "inc_votes: n" format when updating votes'
+							);
+						});
+				});
 				it("PUT status: 405 if using an invalid method", () => {
 					return request(app)
 						.put("/api/articles/1")
@@ -230,12 +241,20 @@ describe("/", () => {
 								);
 							});
 					});
-					it("GET status: 404, returns an error message if article has no comments ", () => {
+					it("GET status: 400, returns an empty array when a valid article has no comments ", () => {
 						return request(app)
 							.get("/api/articles/3/comments")
+							.expect(400)
+							.then(({ body }) => {
+								expect(body).to.eql([]);
+							});
+					});
+					it("GET status: 404 returns an error message if article doesnt exist for chosen comments", () => {
+						return request(app)
+							.get("/api/articles/99/comments")
 							.expect(404)
 							.then(({ body }) => {
-								expect(body.msg).to.equal("Article 3 has no comments");
+								expect(body.msg).to.equal("Article 99 does not exist!");
 							});
 					});
 					it("GET status: 200, and return sorted by created_at by default defaulted descending ", () => {
@@ -295,6 +314,14 @@ describe("/", () => {
 							});
 					});
 				});
+			});
+			xit("GET Status: 200 and returns all the articles", () => {
+				return request(app)
+					.get("/api/articles")
+					.expect(200)
+					.then(mystery => {
+						console.log(mystery);
+					});
 			});
 		});
 		describe("/not-a-valid-route", () => {
