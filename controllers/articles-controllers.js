@@ -17,14 +17,13 @@ const sendArticleById = (req, res, next) => {
 
 const patchArticleById = (req, res, next) => {
 	const { article_id } = req.params;
-	const { inc_votes } = req.body;
-	updateArticleById(article_id, inc_votes)
+	const { body } = req;
+	updateArticleById(article_id, body)
 		.then(article => {
-			res.status(201).send({ article });
+			res.status(200).send({ article });
 		})
 		.catch(err => next(err));
 };
-
 const postComment = (req, res, next) => {
 	const { body } = req;
 	const { article_id } = req.params;
@@ -35,7 +34,12 @@ const postComment = (req, res, next) => {
 	};
 	addComment(formattedComment)
 		.then(comment => {
-			res.status(201).send({ comment });
+			console.log(formattedComment.author);
+			if (!formattedComment.author) {
+				res.status(400).send({ msg: "Comment must have a username" });
+			} else {
+				res.status(201).send({ comment });
+			}
 		})
 		.catch(err => next(err));
 };
@@ -45,7 +49,8 @@ const getComments = (req, res, next) => {
 	fetchComments(article_id, req.query)
 		.then(comments => {
 			if (comments.topic) {
-				res.status(200).send([]);
+				const emptyArray = { comments: [] };
+				res.status(200).send(emptyArray);
 			} else {
 				res.status(200).send({ comments });
 			}

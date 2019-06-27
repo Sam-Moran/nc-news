@@ -108,21 +108,38 @@ describe("/", () => {
 							expect(error.body.msg).to.equal("Bad request");
 						});
 				});
-				it("Patch status:201 and increases the vote count", () => {
+				it("Patch status:200 and increases the vote count", () => {
 					return request(app)
 						.patch("/api/articles/1")
 						.send({ inc_votes: 1 })
-						.expect(201)
+						.expect(200)
 						.then(res => {
 							expect(res.body.article.votes).to.equal(101);
 							expect(res.body.article.votes).to.not.equal(100);
 						});
 				});
-				it("Patch status:201 and decreases the vote count", () => {
+				it("PATCH status 200 and return the unchanged article if no information in request body", () => {
+					return request(app)
+						.patch("/api/articles/1")
+						.send({})
+						.expect(200)
+						.then(({ body }) => {
+							expect(body.article).to.contain.keys(
+								"article_id",
+								"title",
+								"body",
+								"votes",
+								"topic",
+								"author",
+								"created_at"
+							);
+						});
+				});
+				it("Patch status:200 and decreases the vote count", () => {
 					return request(app)
 						.patch("/api/articles/1")
 						.send({ inc_votes: -1 })
-						.expect(201)
+						.expect(200)
 						.then(res => {
 							expect(res.body.article.votes).to.equal(99);
 							expect(res.body.article.votes).to.not.equal(100);
@@ -205,6 +222,24 @@ describe("/", () => {
 								expect(body.comment.article_id).to.equal(1);
 							});
 					});
+					it("POST Status: 400 return an error when trying to post an object that doesnt contain a body", () => {
+						return request(app)
+							.post("/api/articles/1/comments")
+							.send({ username: "butter_bridge" })
+							.expect(400)
+							.then(({ body }) => {
+								expect(body.msg).to.equal("Cannot insert null data");
+							});
+					});
+					it("POST Status: 400, return an error when trying to post an object without a username", () => {
+						return request(app)
+							.post("/api/articles/1/comments")
+							.send({ body: "test" })
+							.expect(400)
+							.then(({ body }) => {
+								expect(body.msg).to.equal("Comment must have a username");
+							});
+					});
 					it("POST status:400, error when trying to insert a comment into an invalid article_id", () => {
 						return request(app)
 							.post("/api/articles/99/comments")
@@ -243,10 +278,10 @@ describe("/", () => {
 					});
 					it("GET status: 400, returns an empty array when a valid article has no comments ", () => {
 						return request(app)
-							.get("/api/articles/3/comments")
+							.get("/api/articles/2/comments")
 							.expect(200)
 							.then(({ body }) => {
-								expect(body).to.eql([]);
+								expect(body.comments).to.eql([]);
 							});
 					});
 					it("GET status: 404 returns an error message if article doesnt exist for chosen comments", () => {
@@ -423,18 +458,18 @@ describe("/", () => {
 		});
 		describe("/comments", () => {
 			describe("/:comment_id", () => {
-				it("PATCH Status: 201 and returns a comment and with its votes increased", () => {
+				it("PATCH Status: 200 and returns a comment and with its votes increased", () => {
 					return request(app)
 						.patch("/api/comments/1")
 						.send({ inc_votes: 1 })
-						.expect(201)
+						.expect(200)
 						.then(({ body }) => expect(body.comment.votes).to.equal(17));
 				});
-				it("PATCH Status: 201 and returns a comment and its votes decreased", () => {
+				it("PATCH Status: 200 and returns a comment and its votes decreased", () => {
 					return request(app)
 						.patch("/api/comments/1")
 						.send({ inc_votes: -1 })
-						.expect(201)
+						.expect(200)
 						.then(({ body }) => expect(body.comment.votes).to.equal(15));
 				});
 				it("PATCH Status: 400 and returns an error when trying to increase votes with not a number", () => {

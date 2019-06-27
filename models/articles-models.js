@@ -18,12 +18,13 @@ const fetchArticleById = (article_id, comments) => {
 		});
 };
 
-const updateArticleById = (article_id, inc_votes) => {
-	if (inc_votes) {
+const updateArticleById = (article_id, body) => {
+	const { inc_votes } = body;
+	if (inc_votes || Object.keys(body).length == 0) {
 		return connection
 			.into("articles")
 			.where("article_id", "=", article_id)
-			.increment("votes", inc_votes)
+			.increment("votes", inc_votes || 0)
 			.returning("*")
 			.then(([article]) => article);
 	} else

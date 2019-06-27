@@ -8,23 +8,23 @@ const updateCommentById = (req, res, next) => {
 	const { inc_votes } = req.body;
 	patchCommentById(comment_id, inc_votes)
 		.then(comment => {
-			res.status(201).send({ comment });
+			res.status(200).send({ comment });
 		})
 		.catch(err => next(err));
 };
 
 const removeCommentById = (req, res, next) => {
 	const { comment_id } = req.params;
-	deleteCommentById(comment_id).then(comment => {
-		if (comment === 1) {
-			res.sendStatus(204);
-		} else
-			res
-				.status(404)
-				.send({
+	deleteCommentById(comment_id)
+		.then(comment => {
+			if (comment === 1) {
+				res.sendStatus(204);
+			} else
+				res.status(404).send({
 					msg: `Cannot delete comment ${comment_id} as it does not exist!`
 				});
-	});
+		})
+		.catch(err => next(err));
 };
 
 module.exports = { updateCommentById, removeCommentById };
