@@ -472,6 +472,13 @@ describe("/", () => {
 						.expect(200)
 						.then(({ body }) => expect(body.comment.votes).to.equal(15));
 				});
+				it("PATCH Status: 200 and returns comment unchanged if passed an empty object", () => {
+					return request(app)
+						.patch("/api/comments/1")
+						.send({})
+						.expect(200)
+						.then(({ body }) => expect(body.comment.votes).to.equal(16));
+				});
 				it("PATCH Status: 400 and returns an error when trying to increase votes with not a number", () => {
 					return request(app)
 						.patch("/api/comments/1")

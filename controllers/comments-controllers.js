@@ -5,8 +5,8 @@ const {
 
 const updateCommentById = (req, res, next) => {
 	const { comment_id } = req.params;
-	const { inc_votes } = req.body;
-	patchCommentById(comment_id, inc_votes)
+	const { body } = req;
+	patchCommentById(comment_id, body)
 		.then(comment => {
 			res.status(200).send({ comment });
 		})

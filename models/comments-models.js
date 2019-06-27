@@ -1,11 +1,12 @@
 const connection = require("../db/connection");
 
-const patchCommentById = (comment_id, inc_votes) => {
-	if (inc_votes) {
+const patchCommentById = (comment_id, body) => {
+	const { inc_votes } = body;
+	if (inc_votes || Object.keys(body).length == 0) {
 		return connection
 			.into("comments")
 			.where("comment_id", "=", comment_id)
-			.increment("votes", inc_votes)
+			.increment("votes", inc_votes || 0)
 			.returning("*")
 			.then(([comment]) => comment);
 	} else
