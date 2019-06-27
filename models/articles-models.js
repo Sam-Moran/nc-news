@@ -35,12 +35,14 @@ const updateArticleById = (article_id, body) => {
 		});
 };
 
-const addComment = formattedComment => {
+const addComment = (formattedComment, article_id) => {
 	return connection
 		.into("comments")
 		.insert(formattedComment)
 		.returning("*")
-		.then(([comment]) => comment);
+		.then(([comments]) => {
+			return comments;
+		});
 };
 
 const fetchComments = (article_id, { sort_by, order }) => {

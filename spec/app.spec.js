@@ -248,7 +248,7 @@ describe("/", () => {
 								body:
 									"This is not the greatest comment in the world, this is just a tribute."
 							})
-							.expect(400)
+							.expect(404)
 							.then(({ body }) => {
 								expect(body.msg).to.equal("Resource does not exist");
 							});
@@ -286,10 +286,10 @@ describe("/", () => {
 					});
 					it("GET status: 404 returns an error message if article doesnt exist for chosen comments", () => {
 						return request(app)
-							.get("/api/articles/99/comments")
+							.get("/api/articles/10000/comments")
 							.expect(404)
 							.then(({ body }) => {
-								expect(body.msg).to.equal("Article 99 does not exist!");
+								expect(body.msg).to.equal("Article 10000 does not exist!");
 							});
 					});
 					it("GET status: 200, and return sorted by created_at by default defaulted descending ", () => {

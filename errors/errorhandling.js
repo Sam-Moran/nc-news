@@ -11,7 +11,9 @@ const sqlErrors = (err, req, res, next) => {
 		"42703": "Column to sort_by does not exist",
 		"22003": "Article_id value is not within range"
 	};
-	if (errorCodes[err.code]) {
+	if (err.code === "23503") {
+		res.status(404).send({ msg: errorCodes[err.code] });
+	} else if (errorCodes[err.code]) {
 		res.status(400).send({ msg: errorCodes[err.code] });
 	}
 	next(err);

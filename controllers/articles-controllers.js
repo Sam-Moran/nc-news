@@ -5,6 +5,7 @@ const {
 	fetchComments,
 	fetchArticles
 } = require("../models/articles-models.js");
+const { checkExists } = require("../models/index.js");
 
 const sendArticleById = (req, res, next) => {
 	const { article_id } = req.params;
@@ -32,7 +33,8 @@ const postComment = (req, res, next) => {
 		body: body.body,
 		article_id
 	};
-	addComment(formattedComment)
+
+	addComment(formattedComment, article_id)
 		.then(comment => {
 			if (!formattedComment.author) {
 				res.status(400).send({ msg: "Comment must have a username" });
