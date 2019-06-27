@@ -34,7 +34,6 @@ const postComment = (req, res, next) => {
 	};
 	addComment(formattedComment)
 		.then(comment => {
-			console.log(formattedComment.author);
 			if (!formattedComment.author) {
 				res.status(400).send({ msg: "Comment must have a username" });
 			} else {

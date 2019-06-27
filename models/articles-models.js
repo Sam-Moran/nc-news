@@ -1,4 +1,5 @@
 const connection = require("../db/connection");
+const { checkExists } = require("./index.js");
 
 const fetchArticleById = (article_id, comments) => {
 	return connection("articles")
@@ -58,9 +59,18 @@ const fetchComments = (article_id, { sort_by, order }) => {
 			.orderBy(sort_by || "created_at", order || "desc")
 			.returning("*")
 			.then(comments => {
-				if (!comments.length) {
-					return fetchArticleById(article_id);
-				} else return comments;
+				const articleExists = article_id
+					? checkExists(article_id, "articles", "article_id")
+					: null;
+				return Promise.all([articleExists, comments]);
+			})
+			.then(([articleExists, comments]) => {
+				if (articleExists === false)
+					return Promise.reject({
+						status: 404,
+						msg: `Article ${article_id} does not exist!`
+					});
+				else return comments;
 			});
 	} else
 		return Promise.reject({
@@ -88,8 +98,26 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
 				}
 			})
 			.then(articles => {
-				return articles;
+				const authorExists = author
+					? checkExists(author, "users", "username")
+					: null;
+				const topicExists = topic ? checkExists(topic, "topics", "slug") : null;
+				return Promise.all([authorExists, topicExists, articles]);
+			})
+			.then(([authorExists, topicExists, articles]) => {
+				if (authorExists === false) {
+					return Promise.reject({
+						status: 404,
+						msg: `Author ${author} does not exist!`
+					});
+				} else if (topicExists === false) {
+					return Promise.reject({
+						status: 404,
+						msg: `Topic ${topic} does not exist!`
+					});
+				} else return articles;
 			});
+		om;
 	} else
 		return Promise.reject({
 			status: 400,

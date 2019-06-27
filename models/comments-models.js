@@ -1,4 +1,5 @@
 const connection = require("../db/connection");
+const { checkExists } = require("./index.js");
 
 const patchCommentById = (comment_id, body) => {
 	const { inc_votes } = body;
@@ -8,7 +9,20 @@ const patchCommentById = (comment_id, body) => {
 			.where("comment_id", "=", comment_id)
 			.increment("votes", inc_votes || 0)
 			.returning("*")
-			.then(([comment]) => comment);
+			.then(([comments]) => {
+				const commentExists = comment_id
+					? checkExists(comment_id, "comments", "comment_id")
+					: null;
+				return Promise.all([commentExists, comments]);
+			})
+			.then(([commentExists, comments]) => {
+				if (commentExists === false)
+					return Promise.reject({
+						status: 404,
+						msg: `Comment ${comment_id} does not exist!`
+					});
+				else return comments;
+			});
 	} else
 		return Promise.reject({
 			status: 400,

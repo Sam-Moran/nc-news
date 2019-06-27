@@ -1,3 +1,5 @@
+const connection = require("../db/connection");
+
 const checkExists = (value, table, column) => {
 	return connection
 		.select("*")

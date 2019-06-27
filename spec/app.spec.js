@@ -425,12 +425,12 @@ describe("/", () => {
 						expect(body.articles[0].author).to.equal("butter_bridge")
 					);
 			});
-			xit("GET Status: 400 and returns an error if trying to filter by an author who doesnt exist", () => {
+			it("GET Status: 404 and returns an error if trying to filter by an author who doesnt exist", () => {
 				return request(app)
 					.get("/api/articles?author=Sam_Moran")
-					.expect(200)
+					.expect(404)
 					.then(({ body }) => {
-						console.log(body);
+						expect(body.msg).to.equal("Author Sam_Moran does not exist!");
 					});
 			});
 			it("GET Status: 200 and returns an articles of only a particular topic", () => {
@@ -439,11 +439,13 @@ describe("/", () => {
 					.expect(200)
 					.then(({ body }) => expect(body.articles[0].topic).to.equal("mitch"));
 			});
-			xit("GET Status: 400 and returns an error if the topic doesnt exist", () => {
+			it("GET Status: 404 and returns an error if the topic doesnt exist", () => {
 				return request(app)
 					.get("/api/articles?topic=random")
-					.expect(200)
-					.then(({ body }) => console.log(body));
+					.expect(404)
+					.then(({ body }) =>
+						expect(body.msg).to.equal("Topic random does not exist!")
+					);
 			});
 		});
 		describe("/not-a-valid-route", () => {
@@ -526,6 +528,15 @@ describe("/", () => {
 							expect(body.msg).to.equal(
 								"Cannot delete comment 999 as it does not exist!"
 							)
+						);
+				});
+				it("PATCH Status: 404 when trying to patch a comment that doesnt exist", () => {
+					return request(app)
+						.patch("/api/comments/1000")
+						.send({ inc_votes: 1 })
+						.expect(404)
+						.then(({ body }) =>
+							expect(body.msg).to.equal("Comment 1000 does not exist!")
 						);
 				});
 			});
