@@ -4,7 +4,7 @@ const { usersRouter } = require("./users-router.js");
 const { articlesRouter } = require("./articles-router");
 const { commentsRouter } = require("./comments-router.js");
 const { methodNotAllowed } = require("../errors/errorhandling.js");
-const { endpoints } = require("../endpoints.json");
+const endPoints = require("../endpoints.json");
 
 apiRouter.use("/topics", topicsRouter);
 apiRouter.use("/users", usersRouter);
@@ -14,7 +14,7 @@ apiRouter
 	.route("/*")
 	.all(methodNotAllowed)
 	.get((req, res) => {
-		res.status(200).send({ endPoints });
+		res.status(200).send(endPoints);
 	});
 
 module.exports = apiRouter;
