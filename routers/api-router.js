@@ -12,9 +12,9 @@ apiRouter.use("/articles", articlesRouter);
 apiRouter.use("/comments", commentsRouter);
 apiRouter
 	.route("/*")
-	.all(methodNotAllowed)
 	.get((req, res) => {
 		res.status(200).send(endPoints);
-	});
+	})
+	.all(methodNotAllowed);
 
 module.exports = apiRouter;
