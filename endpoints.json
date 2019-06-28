@@ -6,22 +6,184 @@
 		"description": "serves an array of all topics",
 		"queries": [],
 		"exampleResponse": {
-			"topics": [{ "slug": "football", "description": "Footie!" }]
+			"topics": [
+				{
+					"description": "Code is love, code is life",
+					"slug": "coding"
+				},
+				{
+					"description": "FOOTIE!",
+					"slug": "football"
+				},
+				{
+					"description": "Hey good looking, what you got cooking?",
+					"slug": "cooking"
+				}
+			]
 		}
 	},
 	"GET /api/articles": {
-		"description": "serves an array of all topics",
+		"description": "serves an object containing an array of all topics",
 		"queries": ["author", "topic", "sort_by", "order"],
 		"exampleResponse": {
 			"articles": [
 				{
+					"article_id": 33,
 					"title": "Seafood substitutions are increasing",
+					"body": "'SEAFOOD fraud is a serious global problem', begins a recent report from Oceana, an NGO. Reviewing over 200 studies in 55 countries, the report finds that one in five fish sold has been mislabelled. Although fish fraud is common early in the supply chain, most of it comes at the retail level. In 65% of cases, the motivation is economic—slippery restaurateurs frequently serve up cheaper fish than they advertise to cut costs. In America, Oceana has reported instances of tilapia being sold as the more expensive red snapper. Especially brazen fish criminals have invented new types of fish entirely. In Brazil, researchers were puzzled to find markets selling 'douradinha', ' non-existent species. Close inspection found that 60% of such fish were actually 'vulture' catfish, a relatively undesirable dish. Reports in America of catfish being substituted for more expensive fish date back to at least 2002; Oceana’s study suggests that the phenomenon is spreading.",
+					"votes": 0,
 					"topic": "cooking",
 					"author": "weegembump",
-					"body": "Text from the article..",
-					"created_at": 1527695953341
+					"created_at": "2018-05-30T15:59:13.341Z",
+					"comment_count": "6"
+				},
+				{
+					"article_id": 28,
+					"title": "High Altitude Cooking",
+					"body": "Most backpacking trails vary only a few thousand feet elevation. However, many trails can be found above 10,000 feet. But what many people don’t take into consideration at these high altitudes is how these elevations affect their cooking.",
+					"votes": 0,
+					"topic": "cooking",
+					"author": "happyamy2016",
+					"created_at": "2018-05-27T03:32:28.514Z",
+					"comment_count": "5"
 				}
 			]
+		},
+		"queryExample": "/api/articles?author=[AUTHOR]&topic=[TOPIC]&sort_by=[COLUMN]&order=[ORDER]",
+		"queryRules": {
+			"AUTHOR": "FILTER, by the username",
+			"TOPIC": "FILTER, by topic",
+			"COLUMN": [
+				"article_id",
+				"title",
+				"body",
+				"votes",
+				"topic",
+				"author",
+				"created_At",
+				"comment_count"
+			],
+			"ORDER": ["asc", "desc"]
+		}
+	},
+	"/api/articles/:article_id": {
+		":article_id": "Must be an integer",
+		"GET": {
+			"description": "Returns an on object containing the article matching that id",
+			"response": {
+				"article": {
+					"article_id": 1,
+					"title": "Running a Node App",
+					"body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+					"votes": 0,
+					"topic": "coding",
+					"author": "jessjelly",
+					"created_at": "2016-08-18T12:07:52.389Z",
+					"comment_count": "8"
+				}
+			}
+		},
+		"DELETE": {
+			"description": "Returns a status:204 with no body"
+		},
+		"PATCH": {
+			"description": "Returns an object containing the updated article",
+			"bodyExample": {
+				"inc_votes": 2
+			},
+			"response": {
+				"article": {
+					"article_id": 1,
+					"title": "Running a Node App",
+					"body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+					"votes": 2,
+					"topic": "coding",
+					"author": "jessjelly",
+					"created_at": "2016-08-18T12:07:52.389Z",
+					"comment_count": "8"
+				}
+			}
+		}
+	},
+	"/api/articles/:article_id/comments": {
+		":article_id": "Must be an integer",
+		"GET": {
+			"description": "Returns a comments object with an array of comments related to the article",
+			"response": {
+				"comments": [
+					{
+						"comment_id": 55,
+						"author": "jessjelly",
+						"votes": -3,
+						"created_at": "2017-12-26T22:59:45.392Z",
+						"body": "Ut et libero reiciendis. Tenetur quibusdam veniam in atque corrupti excepturi tenetur qui et. Qui ut autem minus aut explicabo in cumque dolorum. Voluptatem est perferendis velit. Eaque doloremque asperiores error."
+					},
+					{
+						"comment_id": 182,
+						"author": "jessjelly",
+						"votes": -5,
+						"created_at": "2017-12-14T16:22:40.842Z",
+						"body": "Voluptatem voluptas tempore soluta et rerum quia sed quas ut. Non cumque perferendis voluptate vitae est quis sit enim dolor. Et esse qui est et."
+					}
+				]
+			},
+			"queryExample": "/api/articles?sort_by=[COLUMN]&order=[ORDER]",
+			"queryRules": {
+				"COLUMN": ["comment_id", "body", "votes", "author", "created_At"],
+				"ORDER": ["asc", "desc"]
+			}
+		},
+		"POST": {
+			"description": "Returns an object with the newly added comment",
+			"bodyExample": {
+				"username": "username_here",
+				"body": "body_here"
+			},
+			"response": {
+				"comment": {
+					"comment_id": 19,
+					"author": "username_here",
+					"article_id": 1,
+					"votes": 0,
+					"created_at": "YYYY-MM-DD'T'HH: MM: SS.SSS'Z'",
+					"body": "body_here"
+				}
+			}
+		}
+	},
+	"/api/comments/:comment_id": {
+		":comment_id": "Must be an integer",
+		"PATCH": {
+			"description": "Returns an object containing the updated comment",
+			"bodyExample": {
+				"inc_votes": 2
+			},
+			"response": {
+				"comment": {
+					"comment_id": 2,
+					"author": "username_here",
+					"article_id": 1,
+					"votes": 2,
+					"created_at": "YYYY-MM-DD'T'HH: MM: SS.SSS'Z'",
+					"body": "body_here"
+				}
+			}
+		},
+		"DELETE": {
+			"description": "Returns a status:204 with no body"
+		}
+	},
+	"/api/users/:username": {
+		":username": "Must be a valid username",
+		"GET": {
+			"description": "Returns an on object containing the user",
+			"response": {
+				"user": {
+					"username": "tickle122",
+					"avatar_url": "https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg",
+					"name": "Tom Tickle"
+				}
+			}
 		}
 	}
 }
