@@ -13,4 +13,10 @@ const checkExists = (value, table, column) => {
 		});
 };
 
-module.exports = { checkExists };
+const checkInteger = value => {
+	const numRegex = /\D/g;
+	if (value === numRegex) return true;
+	else return false;
+};
+
+module.exports = { checkExists, checkInteger };

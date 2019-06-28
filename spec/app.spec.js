@@ -447,29 +447,35 @@ describe("/", () => {
 						expect(body.msg).to.equal("Topic random does not exist!")
 					);
 			});
-			it.only("GET Status: 200 and returns a array of 10 articles by default", () => {
+			it("GET Status: 200 and returns a array of 10 articles by default", () => {
 				return request(app)
 					.get("/api/articles")
 					.expect(200)
 					.then(({ body }) => expect(body.articles.length).to.equal(10));
 			});
-			it.only("GET Status: 200 and returns an array of N length by queried", () => {
+			it("GET Status: 200 and returns an array of N length by queried", () => {
 				return request(app)
 					.get("/api/articles?limit=7")
 					.expect(200)
 					.then(({ body }) => expect(body.articles.length).to.equal(7));
 			});
-			it.only("GET Status: 200 returns page 2 of a default limit", () => {
+			it("GET Status: 200 returns page 2 of a default limit", () => {
 				return request(app)
 					.get("/api/articles?p=2")
 					.expect(200)
 					.then(({ body }) => expect(body.articles.length).to.equal(2));
 			});
-			it.only("GET Status: 200 and returns page 2 of a inputted limit", () => {
+			it("GET Status: 200 and returns page 2 of a inputted limit", () => {
 				return request(app)
 					.get("/api/articles?limit=5&p=2")
 					.expect(200)
 					.then(({ body }) => expect(body.articles[0].article_id).to.equal(6));
+			});
+			it("GET Status: 200 and returns a total_count key with a value of all the articles", () => {
+				return request(app)
+					.get("/api/articles")
+					.expect(200)
+					.then(({ body }) => expect(body.total_count).to.equal(12));
 			});
 		});
 		describe("/not-a-valid-route", () => {

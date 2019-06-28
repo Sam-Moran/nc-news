@@ -1,5 +1,5 @@
 const connection = require("../db/connection");
-const { checkExists } = require("./index.js");
+const { checkExists, checkInteger } = require("./index.js");
 
 const fetchArticleById = article_id => {
 	return connection("articles")
@@ -130,10 +130,28 @@ const fetchArticles = ({ sort_by, order, author, topic, limit = 10, p }) => {
 		});
 };
 
+const fetchAllArticles = ({ author, topic }) => {
+	return connection
+		.select("*")
+		.from("articles")
+		.modify(query => {
+			if (author) {
+				query.where("articles.author", "=", author);
+			} else if (topic) {
+				query.where("articles.topic", "=", topic);
+			}
+		})
+		.returning("*")
+		.then(articles => {
+			return articles.length;
+		});
+};
+
 module.exports = {
 	fetchArticleById,
 	updateArticleById,
 	addComment,
 	fetchComments,
-	fetchArticles
+	fetchArticles,
+	fetchAllArticles
 };

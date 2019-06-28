@@ -3,9 +3,10 @@ const {
 	updateArticleById,
 	addComment,
 	fetchComments,
-	fetchArticles
+	fetchArticles,
+	fetchAllArticles
 } = require("../models/articles-models.js");
-const { checkExists } = require("../models/index.js");
+const { checkExists, checkInteger } = require("../models/index.js");
 
 const sendArticleById = (req, res, next) => {
 	const { article_id } = req.params;
@@ -64,7 +65,10 @@ const getArticles = (req, res, next) => {
 		.then(articles => {
 			if (!articles) {
 				res.status(400).send([]);
-			} else res.status(200).send({ articles });
+			} else
+				fetchAllArticles(req.query).then(allArticles => {
+					res.status(200).send({ articles, total_count: allArticles });
+				});
 		})
 		.catch(err => next(err));
 };
