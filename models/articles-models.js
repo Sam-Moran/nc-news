@@ -1,7 +1,7 @@
 const connection = require("../db/connection");
 const { checkExists } = require("./index.js");
 
-const fetchArticleById = (article_id, comments) => {
+const fetchArticleById = article_id => {
 	return connection("articles")
 		.first("articles.*")
 		.leftJoin("comments", "comments.article_id", "=", " articles.article_id")
@@ -81,7 +81,8 @@ const fetchComments = (article_id, { sort_by, order }) => {
 		});
 };
 
-const fetchArticles = ({ sort_by, order, author, topic }) => {
+const fetchArticles = ({ sort_by, order, author, topic, limit = 10, p }) => {
+	const offset = (p - 1) * limit;
 	const acceptedOrders = ["asc", "desc", undefined];
 	if (acceptedOrders.includes(order)) {
 		return connection
@@ -91,6 +92,8 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
 			.count("comments.article_id as comment_count")
 			.groupBy("articles.article_id", "comments.article_id")
 			.orderBy(sort_by || "created_at", order || "desc")
+			.limit(limit)
+			.offset(offset)
 			.returning("*")
 			.modify(query => {
 				if (author) {
