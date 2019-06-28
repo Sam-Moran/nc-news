@@ -1,414 +1,126 @@
-# Northcoders News API
+# NC-NEWS
 
-**You can clone this repository but do not fork it**
+This Test-driven development (TDD) project was to build an API that connects to PostgreSQL using Knex, serving up numerous endpoints that would either return objects containing a specific item or an object containing an array of objects. Some of these endpoints would simply be means of getting data, where as others enabled you to post, update or even delete specific data.
 
-## Background
+The API end points JSON can be found at [https://sam-nc-news.herokuapp.com/api]
 
-We will be building the API to use in the Northcoders News Sprint during the Front End block of the course.
+## Getting started
 
-Your database will be PSQL, and you will interact with it using [Knex](https://knexjs.org).
+### Dependencies
 
-## Step 1 - Setting up the Repository
+- Express 4.17.1: [https://expressjs.com/]
+- Knex 0.17.6: [https://www.npmjs.com/package/knex]
+- PostgreSQL 7.11.0: [https://www.npmjs.com/package/pg]
 
-Your first task is set up your own portfolio repository. Once you have cloned this repo, on github create your own **public** repo for your review. **Make sure NOT to initialise it with a README or .gitignore.**
+These packages are installed using the following command:
 
-Next, you should hook your cloned version to the newly created repo using the following terminal commands.
+```bash
+npm install express knex pg
+```
 
-```console
-cd <YOUR-CLONED-REPO>(be-nc-news)
+### Development Dependencies
+
+- Mocha 6.1.4: [https://www.npmjs.com/package/mocha],
+- Chai: 4.2.0 [https://www.npmjs.com/package/chai],
+- Supertest 4.0.2: [https://www.npmjs.com/package/supertest]
+
+Since Mocha, Chai and Supertest are all installed as development dependencies, you use the following command:
+
+```bash
+npm install -d mocha chai supertest nodemon
+```
+
+### Avaliable scripts
+
+```js
+npm start
+
+// Listens for changes on the browser
 ```
 
 ```js
-git remote -v
+npm run setup-dbs
 
-// This should display a url to the Northcoders repo
+// Creates the development and test databases locally.
 ```
 
 ```js
-git remote remove origin
+npm run seed
 
-// This will remove your cloned version from pushing to ours
+// Seeds the development and test bases with data
 ```
 
 ```js
-git remote -v
-
-// This should now show nothing
+npm run migrate-make FILE_NAME
+// Uses Knex migration tool to create migration files filled with boilerplate code
 ```
 
 ```js
-git remote add origin <YOUR- GITHUB-URL>
-
-// This will add your github location to your local git repository
+npm run migrate-latest
+// Updates the datebase with the migrations
 ```
 
 ```js
-git remote -v
-
-// This should now show your repo url and you are good to go...
+npm run migrate-rollback
+//  Rolls back the most recent migrations
 ```
 
-## Step 2 - Setting up your project
-
-In this repo we have provided you with the knexfile. Make sure to add it to the `.gitignore` once you start pushing to your own repository. If you are on linux insert your postgres username and password into the knexfile.
-
-You have also been provided with a `db` folder with some data, a [setup.sql](./db/setup.sql) file, a `seeds` folder and a `utils` folder. You should also take a minute to familiarise yourself with the npm scripts you have been provided.
-
-Your second task is to make accessing both sets of data around your project easier. You should make 3 `index.js` files: one in `db`, and one in each of your data folders.
-
-The job of `index.js` in each the data folders is to export out all the data from that folder, currently stored in separate files. This is so that, when you need access to the data elsewhere, you can write one convenient require statement - to the index file, rather than having to require each file individually. Make sure the index file exports an object with values of the data from that folder with the keys:
-
-- `topicData`
-- `articleData`
-- `userData`
-- `commentData`
-
-The job of the `db/index.js` file will be to export out of the db folder _only the data relevant to the current environment_. Specifically this file should allow your seed file to access only a specific set of data depending on the environment it's in: test, development or production. To do this is will have to require in all the data and should make use of `process.env` in your `index.js` file to achieve only exporting the right data out.
-
-**HINT: make sure the keys you export match up with the keys required into the seed file**
-
-## Step 3 - Migrations and Seeding
-
-Your seed file should now be set up to require in either test or dev data depending on the environment.
-
-You will need to create your migrations and complete the provided seed function to insert the appropriate data into your database.
-
-### Migrations
-
-This is where you will set up the schema for each table in your database.
-
-You should have separate tables for `topics`, `articles`, `users` and `comments`. You will need to think carefully about the order in which you create your migrations.
-
-Each topic should have:
-
-- `slug` field which is a unique string that acts as the table's primary key
-- `description` field which is a string giving a brief description of a given topic
-
-Each user should have:
-
-- `username` which is the primary key & unique
-- `avatar_url`
-- `name`
-
-Each article should have:
-
-- `article_id` which is the primary key
-- `title`
-- `body`
-- `votes` defaults to 0
-- `topic` field which references the slug in the topics table
-- `author` field that references a user's primary key (username)
-- `created_at` defaults to the current timestamp
-
-Each comment should have:
-
-- `comment_id` which is the primary key
-- `author` field that references a user's primary key (username)
-- `article_id` field that references an article's primary key
-- `votes` defaults to 0
-- `created_at` defaults to the current timestamp
-- `body`
-
-- **NOTE:** psql expects `Timestamp` types to be in a specific date format - **not a unix timestamp** as they are in our data! However, you can easily **re-format a unix timestamp into something compatible with our database using JS - you will be doing this in your utility function**... [JavaScript Date object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
-
-### Seeding
-
-You need to complete the provided seed function to insert the appropriate data into your database.
-
-Utilising your data manipulation skills, you will also need to complete the utility functions provided - `formatDate`, `makeRefObj`, and `formatComments` for the seed function to work. Instructions on these utility functions are in the [utils README](./db/utils/README.md).
-
-**Some advice: don't write all the utility functions in one go, write them when you need them in your seed**
-
----
-
-## Step 4 - Building Endpoints
-
-- Use proper project configuration from the offset, being sure to treat development and test environments differently.
-- Test each route **as you go**, checking both successful requests **and the variety of errors you could expect to encounter** [See the error-handling file here for ideas of errors that will need to be considered](error-handling.md).
-- After taking the happy path when testing a route, think about how a client could make it go wrong. Add a test for that situation, then error handling to deal with it gracefully.
-- **HINT**: You will need to take advantage of knex migrations in order to efficiently test your application.
-
----
-
-### Vital Routes
-
-Your server _must_ have the following endpoints:
-
-```http
-GET /api/topics
-
-GET /api/users/:username
-
-GET /api/articles/:article_id
-PATCH /api/articles/:article_id
-
-POST /api/articles/:article_id/comments
-GET /api/articles/:article_id/comments
-
-GET /api/articles
-
-PATCH /api/comments/:comment_id
-DELETE /api/comments/:comment_id
-
-GET /api
+```js
+npm run seed:prod
+// Sets the Node enviroment to production, gets heroku database URL and then seeds the database
 ```
 
----
-
-### Route Requirements
-
-_**All of your endpoints should send the below responses in an object, with a key name of what it is that being sent. E.g.**_
-
-```json
-{
-  "topics": [
-    {
-      "description": "Code is love, code is life",
-      "slug": "coding"
-    },
-    {
-      "description": "FOOTIE!",
-      "slug": "football"
-    },
-    {
-      "description": "Hey good looking, what you got cooking?",
-      "slug": "cooking"
-    }
-  ]
-}
+```js
+npm run migrate-latest:prod
+// Sets the Node enviroment to production, gets heroku database URL and updates the database to the latest migration
 ```
 
----
-
-```http
-GET /api/topics
+```js
+npm run migrate-rollback:prod
+// Sets the Node enviroment to production, gets heroku database URL and rollbacks the most recent migration to the database
 ```
 
-#### Responds with
+## Testing
 
-- an array of topic objects, each of which should have the following properties:
-  - `slug`
-  - `description`
+Within the spec folder there are two spec files:
 
----
+- app.spec.js
+- utils.spec.js
 
-```http
-GET /api/users/:username
+### app.spec.js
+
+Within the spec file the node enviroment and using the following command the file is run using, mocha, chai, chai-sorted and supertests on any assertions I have made:
+
+```js
+npm test
 ```
 
-#### Responds with
+This file tests serves two purposes on app.js:
 
-- a user object which should have the following properties:
-  - `username`
-  - `avatar_url`
-  - `name`
+##### Avaliable end points
 
----
+There are numerous end points avaliable that allow a user to either GET, POST, PATCH or DELETE data on the server.
 
-```http
-GET /api/articles/:article_id
+The tests are to assert what a user would receive from an endpoint when using a particular method and to ensure that there is conistency in what they would receive across all endpoints
+
+##### Error handling
+
+There are numerous ways an endpoint could fail, either by trying to GET data that doesn't exist or to PATCH data in an incorrect way. These test are varied to ensure errors are handled appropriately and a response is given to the user so they know why and also that there aren't any false positives. For example when trying to GET comments for an article that exists and trying to get comments for an article that doesn't exist would both present the user with an empty array. It is more appropriate in the latter case to provide an error message telling them that article doesn't exist.
+
+### utils.spec.js
+
+This file tests db/utils/util.js. This file is where the essential utilities needed in order to successfully migrate the source data into the database.
+
+```js
+npm run test-utils
 ```
 
-#### Responds with
+Using mocha and chai, these tests check wheter the created functions output the inputted data correctly in order for it to be inserted into the database either with the creation of a referece object or by formatting the data. Without these tests data could be enter malformed which would result in wrong data being served by the end points.
 
-- an article object, which should have the following properties:
+## Deployment
 
-  - `author` which is the `username` from the users table
-  - `title`
-  - `article_id`
-  - `body`
-  - `topic`
-  - `created_at`
-  - `votes`
-  - `comment_count` which is the total count of all the comments with this article_id - you should make use of knex queries in order to achieve this
+Using the following guide [https://github.com/northcoders/be-nc-news/blob/master/hosting.md] this app was deployed to Heroku here :[https://sam-nc-news.herokuapp.com/api]
 
----
+## Author
 
-```http
-PATCH /api/articles/:article_id
-```
-
-#### Request body accepts
-
-- an object in the form `{ inc_votes: newVote }`
-
-  - `newVote` will indicate how much the `votes` property in the database should be updated by
-
-  e.g.
-
-  `{ inc_votes : 1 }` would increment the current article's vote property by 1
-
-  `{ inc_votes : -100 }` would decrement the current article's vote property by 100
-
-#### Responds with
-
-- the updated article
-
----
-
-```http
-POST /api/articles/:article_id/comments
-```
-
-#### Request body accepts
-
-- an object with the following properties:
-  - `username`
-  - `body`
-
-#### Responds with
-
-- the posted comment
-
----
-
-```http
-GET /api/articles/:article_id/comments
-```
-
-#### Responds with
-
-- an array of comments for the given `article_id` of which each comment should have the following properties:
-  - `comment_id`
-  - `votes`
-  - `created_at`
-  - `author` which is the `username` from the users table
-  - `body`
-
-#### Accepts queries
-
-- `sort_by`, which sorts the articles by any valid column (defaults to created_at)
-- `order`, which can be set to `asc` or `desc` for ascending or descending (defaults to descending)
-
----
-
-```http
-GET /api/articles
-```
-
-#### Responds with
-
-- an `articles` array of article objects, each of which should have the following properties:
-  - `author` which is the `username` from the users table
-  - `title`
-  - `article_id`
-  - `topic`
-  - `created_at`
-  - `votes`
-  - `comment_count` which is the total count of all the comments with this article_id - you should make use of knex queries in order to achieve this
-
-#### Should accept queries
-
-- `sort_by`, which sorts the articles by any valid column (defaults to date)
-- `order`, which can be set to `asc` or `desc` for ascending or descending (defaults to descending)
-- `author`, which filters the articles by the username value specified in the query
-- `topic`, which filters the articles by the topic value specified in the query
-
----
-
-```http
-PATCH /api/comments/:comment_id
-```
-
-#### Request body accepts
-
-- an object in the form `{ inc_votes: newVote }`
-
-  - `newVote` will indicate how much the `votes` property in the database should be updated by
-
-  e.g.
-
-  `{ inc_votes : 1 }` would increment the current article's vote property by 1
-
-  `{ inc_votes : -1 }` would decrement the current article's vote property by 1
-
-#### Responds with
-
-- the updated comment
-
----
-
-```http
-DELETE /api/comments/:comment_id
-```
-
-#### Should
-
-- delete the given comment by `comment_id`
-
-#### Responds with
-
-- status 204 and no content
-
----
-
-# STOP!
-
-If you have reached this point, go back and review all of the routes that you have created. Consider whether there are any errors that could occur that you haven't yet accounted for. If you identify any, write a test, and then handle the error. Even if you can't think of a specific error for a route, every controller that invokes a promise-based model should contain a `.catch` block to prevent unhandled promise rejections.
-
-As soon as you think that you have handled all the possible errors that you can think of, let someone on the teaching team know. One of us will be able to take a look at your code and give you some feedback. While we are looking at your code, you can continue with the following:
-
-# Continue...
-
----
-
-```http
-GET /api
-```
-
-#### Responds with
-
-- JSON describing all the available endpoints on your API
-
----
-
-### Step 3 - Hosting
-
-Make sure your application and your database is hosted using Heroku
-
-### Step 4 - README
-
-Write a README for your project. Check out this [guide](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2) for what sort of things should be included.
-
-It should also include the link to where your Heroku app is hosted.
-
-Take a look at GitHub's guide for [mastering markdown](https://guides.github.com/features/mastering-markdown/) for making it look pretty!
-
-### Optional Extras
-
-#### Pagination
-
-To make sure that an API can handle large amounts of data, it is often necessary to use **pagination**. Head over to [Google](https://www.google.co.uk/search?q=cute+puppies), and you will notice that the search results are broken down into pages. It would not be feasible to serve up _all_ the results of a search in one go. The same is true of websites / apps like Facebook or Twitter (except they hide this by making requests for the next page in the background, when we scroll to the bottom of the browser). We can implement this functionality on our `/api/articles` and `/api/comments` endpoints.
-
-```http
-GET /api/articles
-```
-
-- Should accepts the following queries:
-  - `limit`, which limits the number of responses (defaults to 10)
-  - `p`, stands for page which specifies the page at which to start (calculated using limit)
-- add a `total_count` property, displaying the total number of articles (**this should display the total number of articles with any filters applied, discounting the limit**)
-
----
-
-```http
-GET /api/articles/:article_id/comments
-```
-
-Should accept the following queries:
-
-- `limit`, which limits the number of responses (defaults to 10)
-- `p`, stands for page which specifies the page at which to start (calculated using limit)
-
-#### More Routes
-
-```http
-POST /api/articles
-
-DELETE /api/articles/:article_id
-
-POST /api/topics
-
-POST /api/users
-GET /api/users
-```
+- **Sam Moran** - [Github: angriestofhippos](https://github.com/angriestofhippos)
