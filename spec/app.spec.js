@@ -477,6 +477,18 @@ describe("/", () => {
 					.expect(200)
 					.then(({ body }) => expect(body.total_count).to.equal(12));
 			});
+			it("GET Status: 200 and returns a total_count key with a value of all the articles for that topic", () => {
+				return request(app)
+					.get("/api/articles?topic=cats")
+					.expect(200)
+					.then(({ body }) => expect(body.total_count).to.equal(1));
+			});
+			it("GET Status: 200 and returns a total_count key with a value of all the articles for that author", () => {
+				return request(app)
+					.get("/api/articles?author=butter_bridge")
+					.expect(200)
+					.then(({ body }) => expect(body.total_count).to.equal(3));
+			});
 		});
 		describe("/not-a-valid-route", () => {
 			it("GET status 404, Route not found", () => {
