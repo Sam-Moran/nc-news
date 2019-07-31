@@ -3,6 +3,7 @@
 This Test-driven development (TDD) project was to build an API that connects to PostgreSQL using Knex, serving up numerous endpoints that would either return objects containing a specific item or an object containing an array of objects. Some of these endpoints would simply be means of getting data, where as others enabled you to post, update or even delete specific data.
 
 The API end points JSON can be found at [https://sam-nc-news.herokuapp.com/api]
+The site based from the endpoints can be found at [https://nc-news-sam.netlify.com/]
 
 ## Getting started
 
